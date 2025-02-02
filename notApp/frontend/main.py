@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QApplication
-from core import MainWindow
+from Registration import RegistrateWindow
 
 if __name__ == '__main__':
     app = QApplication([])
-    window = MainWindow()
+    window = RegistrateWindow()
     window.show()
     app.exec()
