@@ -1,0 +1,12 @@
+2025-02-08 01:10:14,577 - DEBUG - Starting input validation...
+2025-02-08 01:10:14,578 - DEBUG - Input validation successful!
+2025-02-08 01:10:14,579 - DEBUG - Sending user data...
+2025-02-08 01:10:14,583 - DEBUG - Starting new HTTP connection (1): bore.pub:63156
+2025-02-08 01:10:16,571 - DEBUG - http://bore.pub:63156 "POST /users/register HTTP/11" 201 0
+2025-02-08 01:10:16,572 - DEBUG - User data sent successfully!
+2025-02-08 01:10:16,572 - DEBUG - Opening code verification window...
+2025-02-08 01:10:16,813 - DEBUG - Code verification window opened successfully!
+2025-02-08 01:10:29,625 - DEBUG - Confirming code for email: agarkacc@gmail.com
+2025-02-08 01:10:29,626 - DEBUG - Starting new HTTP connection (1): bore.pub:63156
+2025-02-08 01:10:30,430 - DEBUG - http://bore.pub:63156 "POST /users/confirm/agarkacc@gmail.com/998662 HTTP/11" 200 25
+2025-02-08 01:10:30,430 - ERROR - Error confirming code: Expecting value: line 1 column 1 (char 0)

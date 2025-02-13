@@ -10,34 +10,28 @@ from backend.lfeyAPI import APIservice
 from core import MainWindow
 from code_verif_window import CodeVerifWindow
 import logging
+import requests
 from backend.json_work import JSONWork
-
-
 api = APIservice("http://bore.pub:63156")
-# Настройка логирования
-logging.basicConfig(
-    level=logging.DEBUG,  # Уровень логирования (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-    format="%(asctime)s - %(levelname)s - %(message)s",  # Формат логов
-    filename="app.log",  # Имя файла для записи логов
-    filemode="w",  # Режим записи (перезапись файла)
-)
-
 js = JSONWork()
 
-class RegistrateWindow(QMainWindow):
+class Authorization(QMainWindow):
     def __init__(self):
         super().__init__()
+
         x = 700
         y = 400
         x1 = int((1920 - x) // 2)
         y1 = int((1080 - y) // 2)
-        self.setWindowTitle("Registration")
+        self.setWindowTitle("Authorization")
         self.setGeometry(x1, y1, x, y)
+
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout()
         layout.addStretch()
-        self.label = QLabel("Registration")
+
+        self.label = QLabel("Authorization")
         self.label.setFont(QFont("Arial", 24))
         layout.addWidget(self.label, alignment=Qt.AlignmentFlag.AlignCenter)
 
@@ -57,11 +51,7 @@ class RegistrateWindow(QMainWindow):
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(self.password, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.confirm_password = QLineEdit()
-        self.edit_editLine(self.confirm_password, "confirm password")
-        self.confirm_password.setEchoMode(QLineEdit.EchoMode.Password)
-        layout.addWidget(self.confirm_password, alignment=Qt.AlignmentFlag.AlignCenter)
-
+        layout.addStretch()
         self.registration_button = QPushButton("Registration")
         self.registration_button.setMinimumSize(300, 50)
         self.registration_button.clicked.connect(self.validate_input)
@@ -70,6 +60,7 @@ class RegistrateWindow(QMainWindow):
         layout.addStretch()
 
         central_widget.setLayout(layout)
+
 
     def edit_editLine(self, EditLine, PlaceholderText):
         EditLine.setFixedWidth(300)
@@ -80,8 +71,9 @@ class RegistrateWindow(QMainWindow):
     def validate_input(self):
         logging.debug("Starting input validation...")
         email = self.mail.text()
-        password = self.password.text()
-        confirm_password = self.confirm_password.text()
+        user_password = self.password.text()
+
+
 
         # Валидация email
         email_regex = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
@@ -90,24 +82,16 @@ class RegistrateWindow(QMainWindow):
             self.show_message("Invalid email format!", "Error")
             return
 
-        # Валидация пароля
-        if len(password) < 6:
-            logging.error("Password too short!")
-            self.show_message("Password must be at least 6 characters long!", "Error")
-            return
 
+        a = api.login(email, user_password)
+        print(a)
+        if a:
+            js.set_pc_number(a)
+            logging.debug("Input validation successful!")
+            self.show_message("Registration successful!", "Success")
+        else:
+            self.show_message("Registration failed!", "Error")
 
-        if password != confirm_password:
-            logging.error("Passwords do not match!")
-            self.show_message("Passwords do not match!", "Error")
-            return
-
-        logging.debug("Input validation successful!")
-
-        self.show_message("Registration successful!", "Success")
-        self.send_user_data(email, password)
-        js.set_open(1)
-        self.open_code_verif_menu()
 
     def show_message(self, message, message_type):
         self.error_label.setText(message)
@@ -121,29 +105,3 @@ class RegistrateWindow(QMainWindow):
 
     def clear_message(self):
         self.error_label.setText("")
-
-    def send_user_data(self, email, password):
-        logging.debug("Sending user data...")
-        try:
-            api.send_user_data(email, password)
-            logging.debug("User data sent successfully!")
-        except Exception as e:
-            logging.error(f"Error sending user data: {e}")
-            raise
-
-    def open_main_menu(self):
-        self.main_menu = MainWindow()
-        self.main_menu.show()
-        self.close()  # Закрываем окно регистрации
-
-    def open_code_verif_menu(self):
-        logging.debug("Opening code verification window...")
-        try:
-            # Передаем email и код в конструктор
-            self.code_menu = CodeVerifWindow(email=self.mail.text(), api=api)  # Замените "123456" на реальный код
-            self.code_menu.show()
-            self.close()
-            logging.debug("Code verification window opened successfully!")
-        except Exception as e:
-            logging.error(f"Error opening code verification window: {e}")
-            raise
